@@ -41,4 +41,7 @@ This repository is in an early phase. The folders below describe how the system 
 
 ## Current status
 
-Phase 1 is project structure only. Packages are not installed yet, and there is no Next.js app, FastAPI app, RL code, or simulator code in this step.
+- **Phase 1**: Completed project foundation, Next.js frontend, FastAPI backend, CORS, and `/health` endpoint.
+- **Phase 2**: Completed network simulator, 5 supported topologies (line, bus, star, ring, mesh), traffic generation, routing, metrics calculation, and `POST /simulate` endpoint.
+- **Phase 3**: Completed simulator validation suite and standard Gym-compatible `NetworkEnv` RL environment interface in `rl/`. Ready for RL agent training in Phase 4.
+
