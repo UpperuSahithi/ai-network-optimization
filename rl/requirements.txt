@@ -1,7 +1,4 @@
-fastapi
-uvicorn[standard]
 numpy
 gymnasium
 stable-baselines3
 torch
-httpx

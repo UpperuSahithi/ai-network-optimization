@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 
-const HEALTH_URL = "http://localhost:8000/health";
+const HEALTH_URL = process.env.NEXT_PUBLIC_API_URL
+  ? `${process.env.NEXT_PUBLIC_API_URL}/health`
+  : "http://localhost:8000/health";
 
-type ConnectionStatus = "checking" | "connected" | "disconnected";
+export type ConnectionStatus = "checking" | "connected" | "disconnected";
 
-export default function BackendStatus() {
+interface BackendStatusProps {
+  onStatusChange?: (status: ConnectionStatus) => void;
+}
+
+export default function BackendStatus({ onStatusChange }: BackendStatusProps) {
   const [status, setStatus] = useState<ConnectionStatus>("checking");
 
   useEffect(() => {
@@ -23,12 +29,15 @@ export default function BackendStatus() {
 
         if (response.ok && data.status === "ok") {
           setStatus("connected");
+          onStatusChange?.("connected");
         } else {
           setStatus("disconnected");
+          onStatusChange?.("disconnected");
         }
       } catch {
         if (!cancelled) {
           setStatus("disconnected");
+          onStatusChange?.("disconnected");
         }
       }
     }
@@ -40,18 +49,29 @@ export default function BackendStatus() {
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [onStatusChange]);
 
-  const label =
-    status === "checking"
-      ? "Backend: Checking..."
-      : status === "connected"
-        ? "Backend: Connected ✓"
-        : "Backend: Disconnected";
+  const isConnected = status === "connected";
+  const isChecking = status === "checking";
 
   return (
-    <p className="mb-8 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-      {label}
-    </p>
+    <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 shadow-xs">
+      <span
+        className={`h-2 w-2 rounded-full ${
+          isChecking
+            ? "bg-amber-400 animate-pulse"
+            : isConnected
+              ? "bg-emerald-500"
+              : "bg-rose-500"
+        }`}
+      />
+      <span className="font-medium">
+        {isChecking
+          ? "Backend: Checking..."
+          : isConnected
+            ? "Backend: Connected (FastAPI :8000)"
+            : "Backend: Disconnected (FastAPI :8000)"}
+      </span>
+    </div>
   );
 }
